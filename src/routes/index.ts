@@ -1,6 +1,6 @@
 import express, { Application } from "express";
-import userRoutes from "./user.routes";
-import postRoutes from "./post.routes";
+import userRoutes from "./user";
+import postRoutes from "./post";
 
 const app: Application = express();
 

@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 const filterUsers = async (filters: Record<string, any>) => {
   const where: Record<string, any> = {};
 
-  // Add filters for each field if provided
   if (filters.name) {
     where.name = { contains: filters.name, mode: "insensitive" };
   }
