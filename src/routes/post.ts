@@ -1,23 +1,41 @@
 import { Router } from "express";
-import getAllPosts from "../services/post/getAllPosts";
-import getPostById from "../services/post/getPostById";
-import createPost from "../services/post/createPost";
-import updatePost from "../services/post/updatePost";
-import patchPost from "../services/post/patchPost";
-import deletePost from "../services/post/deletePost";
+import getAllPostsController from "../controllers/post/getAllPosts";
+import createPostController from "../controllers/post/createPost";
+import getPostByIdController from "../controllers/post/getPostById";
+import updatePostController from "../controllers/post/updatePost";
+import patchPostController from "../controllers/post/patchPost";
+import deletePostController from "../controllers/post/deletePost";
+import { validateSchema } from "../middleware/validation.middleware";
+import { object, string, number } from "zod";
+
+const createPostSchema = object({
+  title: string().min(1),
+  body: string().min(1),
+  authorId: number().int().positive(),
+});
+
+const updatePostSchema = object({
+  title: string().min(1),
+  body: string().min(1),
+});
+
+const patchPostSchema = object({
+  title: string().min(1).optional(),
+  body: string().min(1).optional(),
+});
 
 const router = Router();
 
-router.get("/", getAllPosts);
+router.get("/", getAllPostsController);
 
-router.get("/:id", getPostById);
+router.get("/:id", getPostByIdController);
 
-router.post("/", createPost);
+router.post("/", validateSchema(createPostSchema), createPostController);
 
-router.put("/:id", updatePost);
+router.put("/:id", validateSchema(updatePostSchema), updatePostController);
 
-router.patch("/:id", patchPost);
+router.patch("/:id", validateSchema(patchPostSchema), patchPostController);
 
-router.delete("/:id", deletePost);
+router.delete("/:id", deletePostController);
 
 export default router;

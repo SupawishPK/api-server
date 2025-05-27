@@ -1,12 +1,10 @@
-import { PrismaClient } from "../../generated/prisma";
+import { Post, PrismaClient } from "../../generated/prisma";
 
 const prisma = new PrismaClient();
 
-const createPost = async (data: {
-  title: string;
-  body: string;
-  authorId: number;
-}) => {
+type ICreatePostInput = Omit<Post, "id" | "createdAt" | "updatedAt">;
+
+const createPost = async (data: ICreatePostInput) => {
   return await prisma.post.create({
     data: {
       title: data.title,

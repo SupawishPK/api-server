@@ -1,9 +1,9 @@
 import { PrismaClient, User } from "../../generated/prisma";
 const prisma = new PrismaClient();
 
-type PatchUserInput = Partial<Omit<User, "id">>;
+type IPatchUserInput = Partial<Omit<User, "id" | "createdAt" | "updatedAt">>;
 
-const patchUser = async (id: number, data: PatchUserInput): Promise<User> => {
+const patchUser = async (id: number, data: IPatchUserInput): Promise<User> => {
   return prisma.user.update({ where: { id }, data });
 };
 
