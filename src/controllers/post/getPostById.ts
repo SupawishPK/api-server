@@ -1,16 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 import getPostById from "../../services/post/getPostById";
 
-const getPostByIdController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getPostByIdController: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     const post = await getPostById(Number(id));
     if (!post) {
-      return res.status(404).json({ error: "Post not found" });
+      res.status(404).json({ error: "Post not found" });
+      return;
     }
     res.json(post);
   } catch (error) {

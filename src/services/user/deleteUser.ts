@@ -13,18 +13,24 @@ const deleteUser = async (id: number): Promise<User> => {
     });
 
     if (address) {
-      await tx.geo.delete({
+      await tx.geo.deleteMany({
         where: { addressId: address.id },
+      });
+
+      await tx.address.delete({
+        where: { id: address.id },
       });
     }
 
-    await tx.address.delete({
+    const company = await tx.company.findUnique({
       where: { userId: id },
     });
 
-    await tx.company.delete({
-      where: { userId: id },
-    });
+    if (company) {
+      await tx.company.delete({
+        where: { id: company.id },
+      });
+    }
 
     return tx.user.delete({
       where: { id },

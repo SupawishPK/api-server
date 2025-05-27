@@ -1,8 +1,12 @@
-import { PrismaClient } from "../../generated/prisma";
+import { Post, PrismaClient } from "../../generated/prisma";
 
 const prisma = new PrismaClient();
 
-const patchPost = async (id: number, data: any) => {
+type IPatchPostInput = Partial<
+  Omit<Post, "id" | "authorId" | "createdAt" | "updatedAt">
+>;
+
+const patchPost = async (id: number, data: IPatchPostInput) => {
   return await prisma.post.update({
     where: { id },
     data,

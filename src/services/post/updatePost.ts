@@ -1,11 +1,12 @@
-import { PrismaClient } from "../../generated/prisma";
+import { Post, PrismaClient } from "../../generated/prisma";
 
 const prisma = new PrismaClient();
 
-const updatePost = async (
-  id: number,
-  data: { title?: string; body?: string }
-) => {
+type IUpdatePostInput = Partial<
+  Omit<Post, "id" | "authorId" | "createdAt" | "updatedAt">
+>;
+
+const updatePost = async (id: number, data: IUpdatePostInput) => {
   return await prisma.post.update({
     where: { id },
     data,

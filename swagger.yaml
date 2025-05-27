@@ -1,36 +1,45 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   title: Backend API
   version: 1.0.0
   description: REST API with User and Post resources
 
-host: localhost:3000
+host: localhost:5000
 basePath: /api/v1
 schemes:
   - http
 
 securityDefinitions:
-  bearerAuth:
-    type: apiKey
-    name: Authorization
-    in: header
+  auth0:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: ${process.env.ISSUER_BASE_URL}/authorize
+    scopes:
+      openid: OpenID Connect scope
+      profile: User profile information
+      email: User email
 
 definitions:
-  User:
+  UserBasic:
     type: object
     properties:
       id:
         type: integer
       email:
         type: string
+        format: email
       name:
         type: string
+        minLength: 2
       username:
         type: string
+        minLength: 2
       phone:
         type: string
+        minLength: 10
       website:
         type: string
+        minLength: 1
       createdAt:
         type: string
         format: date-time
@@ -41,16 +50,20 @@ definitions:
       - email
       - name
       - username
+      - phone
+      - website
 
-  Post:
+  PostBasic:
     type: object
     properties:
       id:
         type: integer
       title:
         type: string
+        minLength: 1
       body:
         type: string
+        minLength: 1
       authorId:
         type: integer
       createdAt:
@@ -64,20 +77,97 @@ definitions:
       - body
       - authorId
 
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      email:
+        type: string
+        format: email
+      name:
+        type: string
+        minLength: 2
+      username:
+        type: string
+        minLength: 2
+      phone:
+        type: string
+        minLength: 10
+      website:
+        type: string
+        minLength: 1
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      posts:
+        type: array
+        items:
+          $ref: "#/definitions/PostBasic"
+    required:
+      - email
+      - name
+      - username
+      - phone
+      - website
+
+  Post:
+    type: object
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+        minLength: 1
+      body:
+        type: string
+        minLength: 1
+      authorId:
+        type: integer
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      author:
+        $ref: "#/definitions/UserBasic"
+    required:
+      - title
+      - body
+      - authorId
+
 security:
-  - bearerAuth: []
+  - auth0: []
 
 paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      security: []
+      responses:
+        "200":
+          description: API is healthy
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "ok"
+
   /users:
     get:
       summary: List all users
       responses:
-        '200':
+        "200":
           description: List of users
           schema:
             type: array
             items:
-              $ref: '#/definitions/User'
+              $ref: "#/definitions/User"
     post:
       summary: Create a new user
       parameters:
@@ -85,12 +175,34 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              name:
+                type: string
+                minLength: 2
+              username:
+                type: string
+                minLength: 2
+              phone:
+                type: string
+                minLength: 10
+              website:
+                type: string
+                minLength: 1
+            required:
+              - email
+              - name
+              - username
+              - phone
+              - website
       responses:
-        '201':
+        "201":
           description: User created
           schema:
-            $ref: '#/definitions/User'
+            $ref: "#/definitions/User"
 
   /users/{id}:
     parameters:
@@ -101,10 +213,12 @@ paths:
     get:
       summary: Get user by ID
       responses:
-        '200':
+        "200":
           description: User found
           schema:
-            $ref: '#/definitions/User'
+            $ref: "#/definitions/User"
+        "404":
+          description: User not found
     put:
       summary: Update user
       parameters:
@@ -112,12 +226,43 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              name:
+                type: string
+                minLength: 2
+              username:
+                type: string
+                minLength: 2
+              phone:
+                type: string
+                minLength: 10
+              website:
+                type: string
+                minLength: 1
+            required:
+              - email
+              - name
+              - username
+              - phone
+              - website
       responses:
-        '200':
+        "200":
           description: User updated
           schema:
-            $ref: '#/definitions/User'
+            $ref: "#/definitions/User"
+        "404":
+          description: User not found
+    delete:
+      summary: Delete user
+      responses:
+        "204":
+          description: User deleted
+        "404":
+          description: User not found
     patch:
       summary: Patch user
       parameters:
@@ -125,28 +270,43 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              name:
+                type: string
+                minLength: 2
+              phone:
+                type: string
+                minLength: 10
+              website:
+                type: string
+                minLength: 1
       responses:
-        '200':
+        "200":
           description: User patched
           schema:
-            $ref: '#/definitions/User'
-    delete:
-      summary: Delete user
-      responses:
-        '204':
-          description: User deleted
+            $ref: "#/definitions/User"
+        "404":
+          description: User not found
 
   /posts:
     get:
       summary: List all posts
+      parameters:
+        - name: user_id
+          in: query
+          type: integer
+          description: Filter posts by user ID
       responses:
-        '200':
+        "200":
           description: List of posts
           schema:
             type: array
             items:
-              $ref: '#/definitions/Post'
+              $ref: "#/definitions/Post"
     post:
       summary: Create a new post
       parameters:
@@ -154,12 +314,26 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Post'
+            type: object
+            properties:
+              title:
+                type: string
+                minLength: 1
+              body:
+                type: string
+                minLength: 1
+              authorId:
+                type: integer
+                minimum: 1
+            required:
+              - title
+              - body
+              - authorId
       responses:
-        '201':
+        "201":
           description: Post created
           schema:
-            $ref: '#/definitions/Post'
+            $ref: "#/definitions/Post"
 
   /posts/{id}:
     parameters:
@@ -170,10 +344,12 @@ paths:
     get:
       summary: Get post by ID
       responses:
-        '200':
+        "200":
           description: Post found
           schema:
-            $ref: '#/definitions/Post'
+            $ref: "#/definitions/Post"
+        "404":
+          description: Post not found
     put:
       summary: Update post
       parameters:
@@ -181,12 +357,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Post'
+            type: object
+            properties:
+              title:
+                type: string
+                minLength: 1
+              body:
+                type: string
+                minLength: 1
+            required:
+              - title
+              - body
       responses:
-        '200':
+        "200":
           description: Post updated
           schema:
-            $ref: '#/definitions/Post'
+            $ref: "#/definitions/Post"
+        "404":
+          description: Post not found
     patch:
       summary: Patch post
       parameters:
@@ -194,14 +382,25 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Post'
+            type: object
+            properties:
+              title:
+                type: string
+                minLength: 1
+              body:
+                type: string
+                minLength: 1
       responses:
-        '200':
+        "200":
           description: Post patched
           schema:
-            $ref: '#/definitions/Post'
+            $ref: "#/definitions/Post"
+        "404":
+          description: Post not found
     delete:
       summary: Delete post
       responses:
-        '204':
-          description: Post deleted 
+        "204":
+          description: Post deleted
+        "404":
+          description: Post not found

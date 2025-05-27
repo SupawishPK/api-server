@@ -2,19 +2,21 @@ import { Prisma, PrismaClient, User } from "../../generated/prisma";
 
 const prisma = new PrismaClient();
 
+type IGetAllUsersInput = {
+  name?: string;
+  email?: string;
+  username?: string;
+  phone?: string;
+  website?: string;
+};
+
 const getAllUsers = async ({
   name,
   email,
   username,
   phone,
   website,
-}: {
-  name?: string;
-  email?: string;
-  username?: string;
-  phone?: string;
-  website?: string;
-}): Promise<User[]> => {
+}: IGetAllUsersInput): Promise<User[]> => {
   const where: Prisma.UserWhereInput = {};
 
   if (name) {

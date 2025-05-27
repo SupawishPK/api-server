@@ -1,16 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 import getUserById from "../../services/user/getUserById";
 
-const getUserByIdController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getUserByIdController: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await getUserById(Number(id));
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+      return;
     }
     res.json(user);
   } catch (error) {
