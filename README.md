@@ -32,18 +32,24 @@ CLIENT_ID=H9F6QG5SzTKMv0tbmgxLj9LjG1EKVllA
 BASE_URL=http://localhost:3000
 SECRET=your-random-string-here
 
-# Database Configuration
-DATABASE_URL="postgresql://postgres:password@localhost:5432/assignment_db"
+```
+
+## SQL Server
+
+```bash
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=supawish@1" -p 1433:1433 --name sql_server -h sql_server -d mcr.microsoft.com/azure-sql-edge
 ```
 
 ## Installation
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Generate Prisma client:
+
    ```bash
    npx prisma generate
    ```
@@ -62,29 +68,24 @@ DATABASE_URL="postgresql://postgres:password@localhost:5432/assignment_db"
 ## Development
 
 Start the development server:
+
 ```bash
-npm run dev
+bun run dev
 ```
 
 ## Production
 
 Build and start the production server:
-```bash
-npm run build
-npm start
-```
 
-## Docker
-
-Build and run with Docker:
 ```bash
-docker build -t backend-api .
-docker run -p 3000:3000 backend-api
+bun run build
+bun start
 ```
 
 ## API Endpoints
 
 ### Users
+
 - GET /users - List all users
 - GET /users/:id - Get user by ID
 - POST /users - Create user
@@ -93,17 +94,10 @@ docker run -p 3000:3000 backend-api
 - DELETE /users/:id - Delete user
 
 ### Posts
+
 - GET /posts - List all posts
 - GET /posts/:id - Get post by ID
 - POST /posts - Create post
 - PUT /posts/:id - Update post
 - PATCH /posts/:id - Patch post
 - DELETE /posts/:id - Delete post
-
-## Authentication
-
-The API uses OpenID Connect (OIDC) for authentication. All routes require a valid Bearer token.
-
-Test user credentials:
-- Email: candidate@test.com
-- Password: @password1234 
