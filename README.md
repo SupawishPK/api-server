@@ -35,18 +35,18 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=supawish@1" -p 1433:1433 --name sq
 2. Generate Prisma client:
 
    ```bash
-   npx prisma generate
+   bun run prisma:generate
    ```
 
 3. Run database migrations:
    ```bash
-   npx prisma migrate dev
+   bun run prisma:migrate
    ```
 
 ## Seed
 
 ```bash
-   npx prisma db seed
+   bun run prisma:seed
 ```
 
 ## Development
