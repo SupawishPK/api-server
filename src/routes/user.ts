@@ -6,11 +6,8 @@ import createUserController from "../controllers/user/createUser";
 import updateUserController from "../controllers/user/updateUser";
 import patchUserController from "../controllers/user/patchUser";
 import deleteUserController from "../controllers/user/deleteUser";
-import filterUsersController from "../controllers/user/filterUsers";
 
 const router = Router();
-
-router.get("/filter", filterUsersController);
 
 router.get("/", getAllUsersController);
 
