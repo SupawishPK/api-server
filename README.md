@@ -18,22 +18,6 @@ A TypeScript-based REST API server with Express.js, Prisma ORM, and OpenID Conne
 - PostgreSQL database
 - Docker (optional)
 
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-PORT=3000
-NODE_ENV=development
-
-# Auth0 Configuration
-ISSUER_BASE_URL=https://dev-yg.us.auth0.com
-CLIENT_ID=H9F6QG5SzTKMv0tbmgxLj9LjG1EKVllA
-BASE_URL=http://localhost:3000
-SECRET=your-random-string-here
-
-```
-
 ## SQL Server
 
 ```bash
